@@ -3,8 +3,14 @@ Fetch and compare stationXML files from IRIS and SIS (production).
 
 
 Config parameters are at the top of the file, defaults are reasonable.
+thresh_lat_lon_m = 0.1       # in meters
+thresh_elev = 0.1            # in meters
+thresh_dep = 0.1             # in meters
+thresh_response_amp = 0.01   # as a percent
+thresh_response_phase = 0.01 # in radians
 
-Fudged example with verbosity = 0 (only ouput parameters that failed the check):
+
+To show what output looks like, this example used a fudged IRIS stationXML file with verbosity = 0 (only ouput parameters that failed the check):
 ```
 ahutko@namazu:~/STATION_XML_COMPARE$ 
 ahutko@namazu:~/STATION_XML_COMPARE$ 
@@ -41,8 +47,7 @@ Comparing  (SIS): ASR..EHZ 1982-10-10 00:00:00 to 1983-10-23 00:00:00
 ClockDrift is missing from  (SIS) and = 0.0001 in (IRIS)
 ...
 ```
-
-Fudged example with verbosity = 1 (ouput all parameters checked):
+To show what output looks like, this example used a fudged IRIS stationXML file with verbosity = 1 (ouput all parameters checked):
 ```
 ahutko@namazu:~/STATION_XML_COMPARE$ 
 ahutko@namazu:~/STATION_XML_COMPARE$ 
