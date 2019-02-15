@@ -1,5 +1,7 @@
 # compare_station_xml
-Fetch and compare stationXML files from IRIS and SIS (production).
+This script will download the stationXML files from IRIS and SIS-production and compares all of the parameters (latitude, longitdue, starttime...) for each channel+location epoch.  The responses are also compared using ObsPy's evalresp.
+
+Python libraries needed: numpy, obspy.
 
 
 Config parameters are at the top of the file, change them if you like.
@@ -12,7 +14,20 @@ thresh_response_phase = 0.01 # in radians
 verbosity = 0
 ```
 
-To show what output looks like, this example used a fudged IRIS stationXML file with verbosity = 0 (only ouput parameters that failed the check):
+Example of failed request because station isn't in SIS or IRIS:
+```
+ahutko@namazu:~/STATION_XML_COMPARE$ 
+ahutko@namazu:~/STATION_XML_COMPARE$ ./compare_station_xml.py UW.ALKI
+
+SIS file: https://files.anss-sis.scsn.org/production/FDSNstationXML/UW/UW_ALKI.xml
+IRIS file: https://service.iris.edu/fdsnws/station/1/query?net=UW&sta=ALKI&level=response&format=xml&includecomments=true&nodata=404
+
+SIS stationXML file download failed
+
+ahutko@namazu:~/STATION_XML_COMPARE$ 
+```
+
+To show what execution and output looks like, this example used a fudged IRIS stationXML file with verbosity = 0 (only ouput parameters that failed the check):
 ```
 ahutko@namazu:~/STATION_XML_COMPARE$ 
 ahutko@namazu:~/STATION_XML_COMPARE$ 

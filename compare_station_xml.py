@@ -49,20 +49,30 @@ print ("SIS file: " + url1 )
 print ("IRIS file: " + url2 )
 print ()
 station_xml_file_1 = net + "." + sta + ".SIS.xml"
-r=requests.get(url1)
-with open(station_xml_file_1,'wb') as f:
-    f.write(r.content)
-f = open(station_xml_file_1)
-x1 = f.readlines()
-f.close()
+try:
+    r=requests.get(url1)
+    with open(station_xml_file_1,'wb') as f:
+        f.write(r.content)
+    f = open(station_xml_file_1)
+    x1 = f.readlines()
+    f.close()
+except:
+    print("SIS stationXML file download failed" )
+    print()
+    exit()
 
 station_xml_file_2 = net + "." + sta + ".IRIS.xml"
-r=requests.get(url2)
-with open(station_xml_file_2,'wb') as f:
-    f.write(r.content)
-f = open(station_xml_file_2)
-x2 = f.readlines()
-f.close()
+try:
+    r=requests.get(url2)
+    with open(station_xml_file_2,'wb') as f:
+        f.write(r.content)
+    f = open(station_xml_file_2)
+    x2 = f.readlines()
+    f.close()
+except:
+    print("IRIS stationXML file download failed" )
+    print()
+    exit()
 
 #-------- Functions follow.
 
