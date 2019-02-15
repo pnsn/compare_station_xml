@@ -5,7 +5,7 @@ Fetch and compare stationXML files from IRIS and SIS (production).
 Config parameters are at the top of the file, defaults are reasonable.
 
 Fudged example with verbosity = 0 (only ouput parameters that failed the check):
-'''
+```
 ahutko@namazu:~/STATION_XML_COMPARE$ 
 ahutko@namazu:~/STATION_XML_COMPARE$ 
 ahutko@namazu:~/STATION_XML_COMPARE$ ./compare_station_xml.py UW.ASR
@@ -40,10 +40,10 @@ Comparing  (SIS): ASR..EHZ 1982-10-10 00:00:00 to 1983-10-23 00:00:00
           (IRIS): ASR..EHZ 1982-10-10 00:00:00 to 1983-10-23 00:00:00
 ClockDrift is missing from  (SIS) and = 0.0001 in (IRIS)
 ...
-'''
+```
 
 Fudged example with verbosity = 1 (ouput all parameters checked):
-'''
+```
 ahutko@namazu:~/STATION_XML_COMPARE$ 
 ahutko@namazu:~/STATION_XML_COMPARE$ 
 ahutko@namazu:~/STATION_XML_COMPARE$ ./compare_station_xml.py UW.ASR
@@ -97,5 +97,5 @@ Channel.response.amp: maximum diff in amp is 0.00792423036261 %
 Channel.response.phase: maximum diff in phase is 1.7763568394e-13 radians
 
 ...
-'''
+```
 
