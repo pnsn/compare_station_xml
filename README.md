@@ -2,13 +2,15 @@
 Fetch and compare stationXML files from IRIS and SIS (production).
 
 
-Config parameters are at the top of the file, defaults are reasonable.
+Config parameters are at the top of the file, change them if you like.
+```
 thresh_lat_lon_m = 0.1       # in meters
 thresh_elev = 0.1            # in meters
 thresh_dep = 0.1             # in meters
 thresh_response_amp = 0.01   # as a percent
 thresh_response_phase = 0.01 # in radians
-
+verbosity = 0
+```
 
 To show what output looks like, this example used a fudged IRIS stationXML file with verbosity = 0 (only ouput parameters that failed the check):
 ```
