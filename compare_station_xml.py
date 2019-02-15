@@ -44,7 +44,10 @@ url1 = "https://files.anss-sis.scsn.org/production/FDSNstationXML/" + net \
     + "/" + net + "_" + sta + ".xml"
 url2 = "https://service.iris.edu/fdsnws/station/1/query?net=" + net + "&sta=" \
     + sta + "&level=response&format=xml&includecomments=true&nodata=404"
-
+print ()
+print ("SIS file: " + url1 )
+print ("IRIS file: " + url2 )
+print ()
 station_xml_file_1 = net + "." + sta + ".SIS.xml"
 r=requests.get(url1)
 with open(station_xml_file_1,'wb') as f:
