@@ -57,6 +57,7 @@ Channel.response.phase: fail, max(diff_in_phase) of 65.9138034161 radians not wi
 Comparing  (SIS): ASR..EHZ 1982-09-30 00:00:00 to 1982-10-10 00:00:00
           (IRIS): ASR..EHZ 1982-09-30 00:00:00 to 1982-10-10 00:00:00
 ClockDrift is missing from  (SIS) and = 0.0001 in (IRIS)
+Number of response stages don't match: 4 in  (SIS), 5 in (IRIS)
 
 
 Comparing  (SIS): ASR..EHZ 1982-10-10 00:00:00 to 1983-10-23 00:00:00
@@ -102,8 +103,7 @@ Channel.Depth: pass
 Channel.Azimuth: pass
 Channel.SampleRate: pass
 ClockDrift is missing from  (SIS) and = 0.0001 in (IRIS)
-Channel.response.amp: maximum diff in amp is 0.00792423036261 %
-Channel.response.phase: maximum diff in phase is 1.7763568394e-13 radians
+Number of response stages don't match: 4 in  (SIS), 5 in (IRIS)
 
 
 Comparing  (SIS): ASR..EHZ 1982-10-10 00:00:00 to 1983-10-23 00:00:00
