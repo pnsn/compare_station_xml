@@ -5,6 +5,7 @@
 #
 # Alex Hutko, PNSN Feb 14, 2019
 
+import sys
 import matplotlib as mpl
 mpl.use('tkagg')
 import argparse
@@ -37,14 +38,18 @@ parser = argparse.ArgumentParser(description="This fetches and compares SIS \
     and IRIS station XML files")
 help_text = "Specify a NET.STA code, e.g.  UW.ASR"
 parser.add_argument("netsta",help=help_text)
+help_text = "Specify prod or test"
+parser.add_argument("system",help=help_text)
 args = parser.parse_args()
 if ( args.netsta ):
     net = args.netsta.split(".")[0]
     sta = args.netsta.split(".")[1]
-#url1 = "https://files.anss-sis.scsn.org/test/FDSNstationXML/" + net + "/" \
-#    + net + "_" + sta + ".xml"
-url1 = "https://files.anss-sis.scsn.org/production/FDSNstationXML/" + net \
-    + "/" + net + "_" + sta + ".xml"
+if (args.system and args.system == "test"):
+    url1 = "https://files.anss-sis.scsn.org/test/FDSNstationXML/" + net + "/" \
+           + net + "_" + sta + ".xml"
+else:
+    url1 = "https://files.anss-sis.scsn.org/production/FDSNstationXML/" + net \
+           + "/" + net + "_" + sta + ".xml"
 url2 = "https://service.iris.edu/fdsnws/station/1/query?net=" + net + "&sta=" \
     + sta + "&level=response&format=xml&includecomments=true&nodata=404"
 print ()
@@ -216,10 +221,20 @@ x1 = clean_up_fsx_from_xml(x1)
 x2 = clean_up_fsx_from_xml(x2)
 
 #---- Compare station level information
-station_code1, station_lat1, station_lon1, station_elev1 = \
-    get_station_code_lat_lon_elev(x1)
-station_code2, station_lat2, station_lon2, station_elev2 = \
-    get_station_code_lat_lon_elev(x2)
+try:
+    station_code1, station_lat1, station_lon1, station_elev1 = \
+        get_station_code_lat_lon_elev(x1)
+except Exception as e:
+    print("Problem getting station_code and location from XML file {}, could it be empty?".format(station_xml_file_1))
+    print(e)
+    sys.exit(1)
+try:
+    station_code2, station_lat2, station_lon2, station_elev2 = \
+        get_station_code_lat_lon_elev(x2)
+except Exception as e:
+    print("Problem getting station_code and location from XML file {}, could it be empty?".format(station_xml_file_2))
+    print(e)
+    sys.exit(1)
 
 if ( station_code1 != station_code2 ):
     print ("FAIL: station.code  1: " + station_code1 + \
