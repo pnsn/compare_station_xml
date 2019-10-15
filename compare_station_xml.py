@@ -1,32 +1,35 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 # Code to compare two STATION_XML files, specifically one from SIS
 #   and one from IRIS, though is generic enough to compare any two.
 #
 # Alex Hutko, PNSN Feb 14, 2019
 
+import matplotlib as mpl
+mpl.use('tkagg')
 import argparse
 import requests
 import numpy as np
+import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 import obspy
 from obspy import read_inventory
 from obspy.core import UTCDateTime
 
 #---- set thresholds for tolerances
-thresh_lat_lon_m = 0.1       # in meters
+thresh_lat_lon_m = 10       # in meters
 thresh_lat_lon = thresh_lat_lon_m / 111190
-thresh_elev = 0.1            # in meters
-thresh_dep = 0.1             # in meters
+thresh_elev = 10            # in meters
+thresh_dep = 10             # in meters
 #thresh_freq_resp = 0.001
 #thresh_sensitivity = 0.001
-thresh_response_amp = 0.01   # as a percent
-thresh_response_phase = 0.01 # in radians
+thresh_response_amp = 0.1   # as a percent
+thresh_response_phase = 0.1 # in radians
 file1alias = " (SIS)"
 file2alias = "(IRIS)"
 
 #---- verbosity = 0, just print FAILs, = 1, print all PASSs and FAILs
-verbosity = 0
+verbosity = 1
 
 #-------- read input arguments and download stationXML files
 
@@ -92,6 +95,7 @@ def get_station_code_lat_lon_elev(lines):
     for line in lines:
         if ( "<Station code=" in line ):
             for word in line.split():
+                print(word)
                 if ( word[0:5] == "code=" ):
                     stacode = word[6:-1]
         if ( firstlat is True and "<Latitude>" in line ):
@@ -158,9 +162,9 @@ def get_value(lines,keyword):
 
 # Compare two channel+location epochs for lat,lon,elev,dep,azi,samprate,clock
 def compare_epochs(epoch1,epoch2,alias1,alias2):
-    thresh_lat_lon = 0.00001
-    thresh_elev = 0.01
-    thresh_dep = 0.01
+    #thresh_lat_lon = 0.00001
+    #thresh_elev = 0.01
+    #thresh_dep = 0.01
     thresh_azi = 0.01
     thresh_samprate = 0.001
     thresh_clock = 0.000001
@@ -190,6 +194,23 @@ def compare_epochs(epoch1,epoch2,alias1,alias2):
 
 #-------- Main follows.
 
+#station_xml_file_1 = net + "." + sta + ".SIS.xml"
+#try:
+#    with open(station_xml_file_1,'r') as f:
+#        x1 = f.readlines()
+#except:
+#    print("SIS stationXML file download failed" )
+#    print()
+#    exit()
+#
+#station_xml_file_2 = net + "." + sta + ".IRIS.xml"
+#try:
+#    with open(station_xml_file_2,'r') as f:
+#        x2 = f.readlines()
+#except:
+#    print("IRIS stationXML file download failed" )
+#    print()
+#    exit()
 #---- clean up the files of any "fsx:".  (present in SIS station_xml files)
 x1 = clean_up_fsx_from_xml(x1)
 x2 = clean_up_fsx_from_xml(x2)
@@ -237,6 +258,7 @@ for i in range(0,len(chan1)):
         if ( chan1[i] == chan2[j] and loc1[i] == loc2[j] ):
             if ( ( start1[i] == start2[j] ) or ( end1[i] == end2[j] ) or \
                  ( start1[i] >= start2[j] and end1[i] <= end2[j] ) ):
+                 #( (start1[i]-start2[j]).days < 2 or (end1[i]-end2[j]).days < 2 )):
                 found_matching_epoch = 1
                 print ()
                 print ()
@@ -263,36 +285,64 @@ for i in range(0,len(chan1)):
                 Nstages1 = sum(line.count("Stage number=") for line in epoch1[i])
                 Nstages2 = sum(line.count("Stage number=") for line in epoch2[j])
                 if ( Nstages1 != Nstages2 ):
-                    print ("Number of response stages don't match: " + \
+                    print ("Warning: Number of response stages don't match: " + \
                            str(Nstages1) + " in " + file1alias + ", " + \
                            str(Nstages2) + " in " + file2alias )
-                else:
-                    inv1_cha = inv1[0][0][i]
-                    inv2_cha = inv2[0][0][j]
-#                    print ("A: " + inv1_cha.code + " " + str(inv1_cha.start_date) )
-#                    print ("B: " + inv2_cha.code + " " + str(inv2_cha.start_date) )
-                    if ( (UTCDateTime(start1[i]) - inv1_cha.start_date) > 1 ):
-                        print ("WARNING, I'm using the wrong start date.  " + \
-                               "start1[i] = " + str(start1[i]) + \
-                               " inv1_cha.start_date = " + str(inv_cha1.start_date) )
+                #else: RH: always do this, even when number of stages doesn't match.
+                inv1_cha = inv1[0][0][i]
+                inv2_cha = inv2[0][0][j]
+                #print ("A: " + inv1_cha.code + " " + str(inv1_cha.start_date) )
+                #print ("B: " + inv2_cha.code + " " + str(inv2_cha.start_date) )
+                if ( (UTCDateTime(start1[i]) - inv1_cha.start_date) > 1 ):
+                    print ("WARNING, I'm using the wrong start date.  " + \
+                           "start1[i] = " + str(start1[i]) + \
+                           " inv1_cha.start_date = " + str(inv_cha1.start_date) )
+                try:
+                    print("Calculating response for inv1 (SIS)")
                     response1, freqs1 = inv1_cha.response.get_evalresp_response(\
-                                        0.01, 16384, output="VEL")
+                                    0.01, 16384, output="VEL")
+                except Exception as e:
+                    print("Warning for xml 1, cannot calculate response: {}".format(e))
+                    response1 = []
+                try:
+                    print("Calculating response for inv2 (DMC)")
                     response2, freqs2 = inv2_cha.response.get_evalresp_response(\
-                                        0.01, 16384, output="VEL")
-                    amp1 = abs(response1[1:])
-                    amp2 = abs(response2[1:])
-                    ampdiff = 100*abs(amp1 - amp2)/abs(amp1)
-                    phase1 = 2 * np.pi + np.unwrap(np.angle(response1))
-                    phase2 = 2 * np.pi + np.unwrap(np.angle(response2))
+                                    0.01, 16384, output="VEL")
+                except Exception as e:
+                    print("Warning for xml 2, cannot calculate response: {}".format(e))
+                    response2 = []
+                # RH: found response a bit unstable near the nyquist frequency, stop before
+                # response is calculated from 0 to fnyquist, with steps of  fnyquist/(16384/2)
+                # i.e. fnyquist/8192, 90% of fnyquist = 0.90 * 8192, or 7373
+                MAXN = 7373
+                #MAXN = 1000
+                if len(response1) > 0 and len(response2) > 0:
+                    amp1 = abs(response1[1:MAXN])
+                    amp2 = abs(response2[1:MAXN])
+                    ampdiff = 100*(abs(amp1 - amp2)/abs(amp2))
+                    phase1 = 2 * np.pi + np.unwrap(np.angle(response1[1:MAXN]))
+                    phase2 = 2 * np.pi + np.unwrap(np.angle(response2[1:MAXN]))
                     phasediff = 100*abs(phase1-phase2)
                     if ( max(ampdiff) > thresh_response_amp ):
-                        print( "Channel.response.amp: fail, max(diff_in_amp) of " \
+                        title = "Channel.response.amp: fail, max(diff_in_amp) of " \
                               + str(max(ampdiff)) + " % not within " + \
-                              str(thresh_response_amp) ) 
+                              str(thresh_response_amp)
+                        print(title)
+                        plt.plot(freqs1[1:MAXN],amp1,'k.',label=("SIS: " + inv1_cha.code + " " + str(inv1_cha.start_date)))
+                        plt.plot(freqs2[1:MAXN],amp2,'r.',label=("DMC: " + inv2_cha.code + " " + str(inv2_cha.start_date)))
+                        plt.title(title)
+                        plt.legend()
+                        plt.show()
                     if ( max(phasediff) > thresh_response_phase ):
-                        print( "Channel.response.phase: fail, max(diff_in_phase) of " \
+                        title = "Channel.response.phase: fail, max(diff_in_phase) of " \
                               + str(max(phasediff)) + " radians not within " + \
-                              str(thresh_response_phase)  )
+                              str(thresh_response_phase)
+                        print(title)
+                        plt.plot(freqs1[1:MAXN],phase1,'k.',label=(inv1_cha.code + " " + str(inv1_cha.start_date) + "-" + str(inv1_cha.end_date)))
+                        plt.plot(freqs2[1:MAXN],phase2,'r.',label=(inv2_cha.code + " " + str(inv2_cha.start_date) + "-" + str(inv2_cha.end_date)))
+                        plt.title(title)
+                        plt.legend()
+                        plt.show()
                     if ( verbosity == 1 ):
                         print ("Channel.response.amp: maximum diff in amp is " \
                                + str(max(ampdiff)) + " %"  )
