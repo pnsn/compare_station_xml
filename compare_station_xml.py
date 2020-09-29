@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Code to compare two STATION_XML files, specifically one from SIS
 #   and one from IRIS, though is generic enough to compare any two.
