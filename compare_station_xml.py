@@ -45,10 +45,10 @@ if ( args.netsta ):
     net = args.netsta.split(".")[0]
     sta = args.netsta.split(".")[1]
 if (args.system and args.system == "test"):
-    url1 = "https://files.anss-sis.scsn.org/test/FDSNstationXML/" + net + "/" \
+    url1 = "https://files.anss-sis.scsn.org/test/FDSNStationXML1.1/" + net + "/" \
            + net + "_" + sta + ".xml"
 else:
-    url1 = "https://files.anss-sis.scsn.org/production/FDSNstationXML/" + net \
+    url1 = "https://files.anss-sis.scsn.org/production/FDSNStationXML1.1/" + net \
            + "/" + net + "_" + sta + ".xml"
 url2 = "https://service.iris.edu/fdsnws/station/1/query?net=" + net + "&sta=" \
     + sta + "&level=response&format=xml&includecomments=true&nodata=404"
@@ -137,11 +137,23 @@ def get_channel_location_epochs(lines):
                     locations.append(locword)
                 if ( "startDate=" in word ):
                     startword = word.split("\"")[1].strip("Z")
-                    start = datetime.strptime(startword, '%Y-%m-%dT%H:%M:%S')
+                    try:
+                        start = datetime.strptime(startword, '%Y-%m-%dT%H:%M:%S')
+                    except Exception as e:
+                        print(startword)
+                        startword = startword.rstrip("00:00")
+                        startword = startword.rstrip("+")
+                        print(startword)
+                        start = datetime.strptime(startword, '%Y-%m-%dT%H:%M:%S')
                     startdates.append(start)
                 if ( "endDate=" in word ):
                     endword = word.split("\"")[1].strip("Z")
-                    end = datetime.strptime(endword, '%Y-%m-%dT%H:%M:%S')
+                    try:
+                        end = datetime.strptime(endword, '%Y-%m-%dT%H:%M:%S')
+                    except Exception as e:
+                        endword = endword.rstrip("00:00")
+                        endword = endword.rstrip("+")
+                        end = datetime.strptime(endword, '%Y-%m-%dT%H:%M:%S')
                     if ( end.year >= 2599 ):
                         end = datetime.strptime("2599-12-31T23:59:59", \
                               '%Y-%m-%dT%H:%M:%S')
@@ -160,8 +172,11 @@ def get_channel_location_epochs(lines):
 #   the first time keyword is encountered in the list of lists (lines).
 def get_value(lines,keyword):
     for line in lines:
-        if ( keyword in line ):
-            value = float(line.replace(">","<").split("<")[2])
+        if ( keyword in line and "Value" not in line):
+            try:
+                value = float(line.replace(">","<").split("<")[2])
+            except Exception as e:
+                value = None
             return value
     return None
 
