@@ -141,11 +141,9 @@ def get_channel_location_epochs(lines):
                         start = datetime.strptime(startword, '%Y-%m-%dT%H:%M:%S')
                     except Exception as e:
                         print(startword)
-                        if "+" in startword:
-                            startword = startword.rstrip("00:00")
-                            startword = startword.rstrip("+")
-                        if ".0000" in startword:
-                            startword = startword.rstrip(".0")
+                        startword = startword.rstrip("00:00")
+                        startword = startword.rstrip("+")
+                        startword = startword.rstrip(".")
                         print(startword)
                         start = datetime.strptime(startword, '%Y-%m-%dT%H:%M:%S')
                     startdates.append(start)
@@ -154,11 +152,9 @@ def get_channel_location_epochs(lines):
                     try:
                         end = datetime.strptime(endword, '%Y-%m-%dT%H:%M:%S')
                     except Exception as e:
-                        if "+" in endword:
-                            endword = endword.rstrip("00:00")
-                            endword = endword.rstrip("+")
-                        if ".0000" in endword:
-                            endword = endword.rstrip(".0")
+                        endword = endword.rstrip("00:00")
+                        endword = endword.rstrip("+")
+                        endword = endword.rstrip(".")
                         end = datetime.strptime(endword, '%Y-%m-%dT%H:%M:%S')
                     if ( end.year >= 2599 ):
                         end = datetime.strptime("2599-12-31T23:59:59", \
