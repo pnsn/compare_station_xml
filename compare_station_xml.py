@@ -141,8 +141,11 @@ def get_channel_location_epochs(lines):
                         start = datetime.strptime(startword, '%Y-%m-%dT%H:%M:%S')
                     except Exception as e:
                         print(startword)
-                        startword = startword.rstrip("00:00")
-                        startword = startword.rstrip("+")
+                        if "+" in startword:
+                            startword = startword.rstrip("00:00")
+                            startword = startword.rstrip("+")
+                        else if ".0000" in startword:
+                            startword = startword.rstrip(".0000")
                         print(startword)
                         start = datetime.strptime(startword, '%Y-%m-%dT%H:%M:%S')
                     startdates.append(start)
@@ -151,8 +154,11 @@ def get_channel_location_epochs(lines):
                     try:
                         end = datetime.strptime(endword, '%Y-%m-%dT%H:%M:%S')
                     except Exception as e:
-                        endword = endword.rstrip("00:00")
-                        endword = endword.rstrip("+")
+                        if "+" in endword:
+                            endword = endword.rstrip("00:00")
+                            endword = endword.rstrip("+")
+                        else if ".0000" in endword:
+                            endword = endword.rstrip(".0000")
                         end = datetime.strptime(endword, '%Y-%m-%dT%H:%M:%S')
                     if ( end.year >= 2599 ):
                         end = datetime.strptime("2599-12-31T23:59:59", \
@@ -358,21 +364,21 @@ for i in range(0,len(chan1)):
                               + str(max(ampdiff)) + " % not within " + \
                               str(thresh_response_amp)
                         print(title)
-                        plt.plot(freqs1[1:MAXN],amp1,'k.',label=("SIS: " + inv1_cha.code + " " + str(inv1_cha.start_date)))
-                        plt.plot(freqs2[1:MAXN],amp2,'r.',label=("DMC: " + inv2_cha.code + " " + str(inv2_cha.start_date)))
-                        plt.title(title)
-                        plt.legend()
-                        plt.show()
+                        #plt.plot(freqs1[1:MAXN],amp1,'k.',label=("SIS: " + inv1_cha.code + " " + str(inv1_cha.start_date)))
+                        #plt.plot(freqs2[1:MAXN],amp2,'r.',label=("DMC: " + inv2_cha.code + " " + str(inv2_cha.start_date)))
+                        #plt.title(title)
+                        #plt.legend()
+                        #plt.show()
                     if ( max(phasediff) > thresh_response_phase ):
                         title = "Channel.response.phase: fail, max(diff_in_phase) of " \
                               + str(max(phasediff)) + " radians not within " + \
                               str(thresh_response_phase)
                         print(title)
-                        plt.plot(freqs1[1:MAXN],phase1,'k.',label=(inv1_cha.code + " " + str(inv1_cha.start_date) + "-" + str(inv1_cha.end_date)))
-                        plt.plot(freqs2[1:MAXN],phase2,'r.',label=(inv2_cha.code + " " + str(inv2_cha.start_date) + "-" + str(inv2_cha.end_date)))
-                        plt.title(title)
-                        plt.legend()
-                        plt.show()
+                        #plt.plot(freqs1[1:MAXN],phase1,'k.',label=(inv1_cha.code + " " + str(inv1_cha.start_date) + "-" + str(inv1_cha.end_date)))
+                        #plt.plot(freqs2[1:MAXN],phase2,'r.',label=(inv2_cha.code + " " + str(inv2_cha.start_date) + "-" + str(inv2_cha.end_date)))
+                        #plt.title(title)
+                        #plt.legend()
+                        #plt.show()
                     if ( verbosity == 1 ):
                         print ("Channel.response.amp: maximum diff in amp is " \
                                + str(max(ampdiff)) + " %"  )
